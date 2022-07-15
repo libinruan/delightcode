@@ -18,7 +18,7 @@ class Solution:
         h = [(head.val, idx, head) for idx, head in enumerate(lists) if head is not None]
         heapq.heapify(h)
         # list node boilerplate 
-        dummy = ListNode()
+        dummy = ListNode(0)
         p = dummy
         # primary logic: comparison and update pointers
         while h:
