@@ -27,7 +27,7 @@ class Solution:
 
         num = sorted([(val, idx) for (idx, val) in enumerate(numbers)])
         start, end = 0, len(numbers) - 1
-        while start <= end:
+        while start < end:
             if num[start][0] + num[end][0] == target:
                 return sorted([num[start][1], num[end][1]])
             if num[start][0] + num[end][0] > target:
