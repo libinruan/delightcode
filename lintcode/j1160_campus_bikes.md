@@ -87,6 +87,48 @@ class Solution {
 ```
 
 ```python
+#method III
+class Solution:
+    """
+    @param workers: workers' location
+    @param bikes: bikes' location
+    @return: assign bikes
+    """
+
+    def assignBikes(self, workers, bikes):
+        # write your code here
+
+        # 工人和车子数量
+        n = len(workers)
+        m = len(bikes)
+        # 桶排序 按照距离存放
+        Bucket = [[] for i in  range(2002)]
+        for i in range(n):
+            for j in range(m):
+                # 计算距离
+                cost = abs(workers[i][0] - bikes[j][0]) + abs(workers[i][1] - bikes[j][1])
+                # 压入Bucket
+                Bucket[cost].append([i, j])
+
+        # 标记工人有没有分配车子
+        visisted_worker = [False]*n
+        # 标记车子有没有被分配
+        visisted_bike = [False]*m
+
+        # 答案数组
+        ans = [0]*n
+        for i in range(2001):
+            for j in range(len(Bucket[i])):
+                # 人和车的编号
+                workersIdx,bikeIdx = Bucket[i][j]
+                # 车和人都还没有分配
+                if visisted_worker[workersIdx] == False and visisted_bike[bikeIdx] == False:
+                    visisted_worker[workersIdx] = visisted_bike[bikeIdx] = True
+                    ans[workersIdx] = bikeIdx
+        return ans
+```
+
+```python
 class Solution:
     """
     @param workers: workers' location
