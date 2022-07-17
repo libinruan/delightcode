@@ -2,10 +2,6 @@ j1323_fetch_supplies
 j1899_fetch_supplies_ii
 
 ---
-
-j0200_longest_palindromic_substring.md
-j0363_trapping_rain_water.md
-
 j0194_find_words.md
 j0151_best_time_to_buy_and_sell_stock_iii.md
 j0143_sort_colors_ii.md
