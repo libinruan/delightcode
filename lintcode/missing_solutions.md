@@ -2,10 +2,9 @@ j1323_fetch_supplies
 j1899_fetch_supplies_ii
 
 ---
-j0194_find_words.md
-j0151_best_time_to_buy_and_sell_stock_iii.md
-j0143_sort_colors_ii.md
-j0137_clone_graph.md
+
+
+
 j0116_jump_game.md
 j0107_word_break.md
 j1879_two_sum_vii.md
