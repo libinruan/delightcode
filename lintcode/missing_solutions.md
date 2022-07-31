@@ -29,11 +29,8 @@ j1516_xor_sum
 ---
 j0604_window_sum
 j1323_fetch_supplies
-
 j1899_fetch_supplies_ii
-
 j1800_float_combination_sum
-
 j1537_swap_zero_one
 
 j1494_length_of_longest_fibonacci_subsequence
@@ -54,11 +51,19 @@ j0176_route_between_two_nodes_in_graph
 j1778_odd_even_jump
 j1624_max_distance
 
+---
+
 j1557_array_maximum_value
+
 j1475_minimum_legal_bracket_sequence
+
 j1426_robot_jumping
+
 j1365_minimum_cycle_section
 j1316_luck_number
+
+
+---
 
 j0950_sliding_puzzle_iii
 j0816_traveling_salesman_problem
@@ -70,4 +75,4 @@ j0465_kth_smallest_sum_in_two_sorted_arrays
 j0438_copy_books_ii
 j0390_find_peak_element_ii
 j0126_max_tree
----
+
