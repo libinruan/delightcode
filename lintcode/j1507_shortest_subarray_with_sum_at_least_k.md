@@ -1,13 +1,16 @@
-# https://www.lintcode.com/problem/1507/
+https://www.lintcode.com/problem/1507/
 
-# 返回 A 的最短的非空连续子数组的长度，该子数组的和至少为 K 。
+lp: hashmap 只適合找剛好等於某數值的數據。
 
-# 如果没有和至少为 K 的非空子数组，返回 -1 。
+返回 A 的最短的非空连续子数组的长度，该子数组的和至少为 K 。
+如果没有和至少为 K 的非空子数组，返回 -1 。
 
-
+> lp: review LintCode 1844. brute force, brute force with prefix_sum is applicable here as well.
 
 # Official 1
-# 使用单调队列的方法，在《算法面试高频题冲刺班》中讲过时间复杂度 O(n)O(n) 是最优的
+使用`单调队列`的方法，时间复杂度 O(n) 是最优的
+
+```python
 from collections import deque
 class Solution:
     """
@@ -33,15 +36,13 @@ class Solution:
         if shortest == float('inf'):
             return -1
         return shortest
-
-
+```
 
 # Official 2
-# 使用堆的方法。堆支持删除的时候用 lazy_deletion 的方法。
-# 解题详情详见《算法面试高频题班》中的讲解
+使用堆的方法。堆支持删除的时候用 lazy_deletion 的方法。
+
+```python
 from heapq import heappush, heappop
-
-
 class Heap:
     
     def __init__(self):
@@ -110,11 +111,13 @@ class Solution:
         for num in A:
             prefix_sum.append(prefix_sum[-1] + num)
         return prefix_sum
-
+```
 
 
 # Official 3
-# 使用线段树的做法，算法详情详见《算法面试高频题冲刺班》
+使用线段树的做法
+
+```python
 class MySegmentTreeNode:
     
     def __init__(self, start, end, val):
@@ -199,29 +202,30 @@ class Solution:
             sum2index[num] = index
         
         return sum2index
-
+```
 
 
 # answer 1: sliding window
-# 滑动窗口
-# 分析
 
-# 我们用数组 P 表示数组 A 的前缀和，即 P[i] = A[0] + A[1] + ... + A[i - 1]。我们需要找到 x 和 y，使得 P[y] - P[x] >= K 且 y - x 最小。
+lp: O(log(n) * n) ~ O(n log(n))
 
-# 我们用 opt(y) 表示对于固定的 y，最大的满足 P[x] <= P[y] - K 的 x，这样所有 y - opt(y) 中的最小值即为答案。我们可以发现两条性质：
+我们用数组 P 表示数组 A 的前缀和，即 P[i] = A[0] + A[1] + ... + A[i - 1]。我们需要找到 x 和 y，使得 P[y] - P[x] >= K 且 y - x 最小。
 
-# 如果 x1 < x2 且 P[x2] <= P[x1]，那么 opt(y) 的值不可能为 x1，这是因为 x2 比 x1 大，并且如果 x1 满足了 P[x1] <= P[y] - K，那么 P[x2] <= P[x1] <= P[y] - K，即 x2 同样满足 P[x2] <= P[y] - K。
+我们用 opt(y) 表示对于固定的 y，最大的满足 P[x] <= P[y] - K 的 x，这样所有 y - opt(y) 中的最小值即为答案。我们可以发现两条性质：
 
-# 如果 opt(y1) 的值为 x，那么我们以后就不用再考虑 x 了。这是因为如果有 y2 > y1 且 opt(y2) 的值也为 x，但此时 y2 - x 显然大于 y1 - x，不会作为所有 y - opt(y) 中的最小值。
+如果 x1 < x2 且 P[x2] <= P[x1]，那么 opt(y) 的值不可能为 x1，这是因为 x2 比 x1 大，并且如果 x1 满足了 P[x1] <= P[y] - K，那么 P[x2] <= P[x1] <= P[y] - K，即 x2 同样满足 P[x2] <= P[y] - K。
 
-# 算法
+如果 opt(y1) 的值为 x，那么我们以后就不用再考虑 x 了。这是因为如果有 y2 > y1 且 opt(y2) 的值也为 x，但此时 y2 - x 显然大于 y1 - x，不会作为所有 y - opt(y) 中的最小值。
 
-# 我们维护一个关于前缀和数组 P 的单调队列，它是一个双端队列（deque），其中存放了下标 x：x0, x1, ... 满足 P[x0], P[x1], ... 单调递增。这是为了满足性质一。
+算法
 
-# 当我们遇到了一个新的下标 y 时，我们会在队尾移除若干元素，直到 P[x0], P[x1], ..., P[y] 单调递增。这同样是为了满足性质一。
+我们维护一个关于前缀和数组 P 的单调队列，它是一个双端队列（deque），其中存放了下标 x：x0, x1, ... 满足 P[x0], P[x1], ... 单调递增。这是为了满足性质一。
 
-# 同时，我们会在队首也移除若干元素，如果 P[y] >= P[x0] + K，则将队首元素移除，直到该不等式不满足。这是为了满足性质二。
+当我们遇到了一个新的下标 y 时，我们会在队尾移除若干元素，直到 P[x0], P[x1], ..., P[y] 单调递增。这同样是为了满足性质一。
 
+同时，我们会在队首也移除若干元素，如果 P[y] >= P[x0] + K，则将队首元素移除，直到该不等式不满足。这是为了满足性质二。
+
+```python
 class Solution(object):
     def shortestSubarray(self, A, K):
         N = len(A)
@@ -243,14 +247,15 @@ class Solution(object):
             monoq.append(y)
 
         return ans if ans < N+1 else -1
-
+```
 
 # answer 2: double end queue
-# 一个双端队列d，变量i从0开始到n（包含）遍历，队列中存放的是[0,i]之间可能的开始位置，i为结束位置。
-# 如果d[0]满足条件（就是d[0]开始，i结束的字数组和至少为K），就删除它，然后再循环判断，直到d[0]不满足条件。
-# d中位置对应的值是从小到大的，0不满足，后面更不可能满足，所以不用再判断。
-# 如果i比队尾元素小或相等，就删除队尾，循环判断，直到i比队尾元素大。
+一个双端队列d，变量i从0开始到n（包含）遍历，队列中存放的是[0,i]之间可能的开始位置，i为结束位置。
+如果d[0]满足条件（就是d[0]开始，i结束的字数组和至少为K），就删除它，然后再循环判断，直到d[0]不满足条件。
+d中位置对应的值是从小到大的，0不满足，后面更不可能满足，所以不用再判断。
+如果i比队尾元素小或相等，就删除队尾，循环判断，直到i比队尾元素大。
 
+```python
 class Solution:
     """
     @param A: the array
@@ -271,21 +276,22 @@ class Solution:
                 d.pop()
             d.append(i)
         return res if res <= N else -1
-
+```
 
 
 # answer 3: monotonic queue + prefix sum + sliding window
-# 单调队列 + prefix sum + sliding window
-# 维持一个单调递增的队列，我们需要找到的条件为，j > i 且sum[j] - sum[i] >= k, j - i 最短
-# for 循环遍历整个数组把它看成sliding window
-# 出头队列逻辑： 如果当前的presum - 队列头的sum 大于等于k的话，因为头队列为最小起始点，所以后面的presum不可能找到更小的window了 所以可以直接把头部poll出来
-# 出尾队列逻辑： 如果尾部比我当前prefix sum还大，维持单调递增，就直接poll出来
-# 然后入队尾
+单调队列 + prefix sum + sliding window
+维持一个单调递增的队列，我们需要找到的条件为，j > i 且sum[j] - sum[i] >= k, j - i 最短
+for 循环遍历整个数组把它看成sliding window
+出头队列逻辑： 如果当前的presum - 队列头的sum 大于等于k的话，因为头队列为最小起始点，所以后面的presum不可能找到更小的window了 所以可以直接把头部poll出来
+出尾队列逻辑： 如果尾部比我当前prefix sum还大，维持单调递增，就直接poll出来
+然后入队尾
 
-# 注意点： prefix sum array 的长度要比数组长度大一位，因为有可能是正好所有数字加起来等于k，prefix 需要多一位才可以减，也正因为多了一位，再算长度的时候 j - i 不需要加1；
-# for 循环的长度也是prefix sum 的长度 而不是输入数组的长度
+注意点： prefix sum array 的长度要比数组长度大一位，因为有可能是正好所有数字加起来等于k，prefix 需要多一位才可以减，也正因为多了一位，再算长度的时候 j - i 不需要加1；
+for 循环的长度也是prefix sum 的长度 而不是输入数组的长度
+   （这个题也太tm难了，没刷过估计想不到deque的做法）      
 
-# （这个题也太tm难了，没刷过估计想不到deque的做法）      
+```java
 public class Solution {
     /**
      * @param A: the array
@@ -317,3 +323,4 @@ public class Solution {
         return result == Integer.MAX_VALUE ? -1 : result;
     }
 }
+```
