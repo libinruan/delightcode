@@ -158,6 +158,13 @@ class Solution:
 
 
 # JZ 并查集 (to be continued)
+In-degree and out-degree ([page](https://www.log2base2.com/data-structures/graph/degree-of-each-vertex-in-the-graph.html))
+
+The vertex that can serve at an initial node has in-degree zero.
+
+If the graph has a cycle, a topological orde cannot exist.  
+
+DFS (BFS) is typically implemented with LIFO (FIFO) (a stack (queue) if you will) - last (first) in first out.
 ```python
 from typing import (
     List,

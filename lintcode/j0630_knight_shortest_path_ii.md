@@ -1,3 +1,173 @@
+[Problem](https://blog.csdn.net/roufoo/article/details/104338009)
+
+# JZ sprint official solution
+```python
+DIRECTIONS = [(1, 2), (-1, 2), (2, 1), (-2, 1)]  # Python (i, j) ~ (Y-axis, X-axis)
+class GridType():
+    WALL = 1
+    EMPTY = 0
+class Solution:
+    """
+    @program grid: a chessboard include 0 and 1 (obstacles)
+    @return: the shortest path
+    """
+    def shortestPath2(self, grid):
+        if len(grid) == 0 or len(grid[0]) == 0:
+            return -1
+        n, m = len(grid), len(grid[0])
+        queue = collections.deque()
+        # distance (value) from a point (key) to the original. 
+        distance = {(0, 0): 0}
+
+        while queue:
+            x , y = queue.popleft()
+            for delta_x, delta_y in DIRECTIONS:
+                next_x = x + delta_x
+                next_y = y + delta_y
+                
+                if not is_valid(next_x, next_y, grid, distance):
+                    continue
+                queue.append(next_x, next_y)
+                distance[(next_x, next_y)] = distance[(x, y)] + 1
+
+        if (n - 1, m - 1) in distance:
+            return distance[(n - 1, m - 1)]
+
+        return -1
+
+    def is_valid(self, x, y, grid, distance):
+        # still on chessboard
+        if x < 0 or y < 0 or x >= len(grid) or y >= len(grid[0]):
+            return False
+        # is an obstacle?
+        if grid[x][y] == GridType.WALL:
+            return False
+        # has visited?
+        if (x, y) in distance:
+            return False
+        return True
+             
+```
+## Complexity (?)
+
+# DP: Rolling Array
+## Simple DP
+sol: https://www.lintcode.com/problem/630/solution/20146
+```python
+class Solution:
+    # @param {boolean[][]} grid a chessboard included 0 and 1
+    # @return {int} the shortest path
+    def shortestPath2(self, grid):
+        # Write your code here
+        n = len(grid)
+        if n == 0:
+            return -1
+
+        m = len(grid[0])
+        if m == 0:
+            return -1
+
+        f = [ [sys.maxsize for j in range(m)] for _ in range(n)]
+
+        f[0][0] = 0
+        for j in range(m):
+            for i in range(n):
+                if not grid[i][j]:
+                    if i >= 1 and j >= 2 and f[i - 1][j - 2] != sys.maxsize:
+                        f[i][j] = min(f[i][j], f[i - 1][j - 2] + 1)
+                    if i + 1 < n and j >= 2 and f[i + 1][j - 2] != sys.maxsize:
+                        f[i][j] = min(f[i][j], f[i + 1][j - 2] + 1)
+                    if i >= 2 and j >= 1 and f[i - 2][j - 1] != sys.maxsize:
+                        f[i][j] = min(f[i][j], f[i - 2][j - 1] + 1)
+                    if i + 2 < n and j >= 1 and f[i + 2][j - 1] != sys.maxsize:
+                        f[i][j] = min(f[i][j], f[i + 2][j - 1] + 1)
+
+        if f[n - 1][m - 1] == sys.maxsize:
+            return -1
+
+        return f[n - 1][m - 1]
+```
+
+
+## official version
+```python
+DIRECTIONS = [
+    (-1, -2),
+    (1, -2),
+    (-2, -1),
+    (2, -1),
+]
+
+class Solution:
+    # @param {boolean[][]} grid a chessboard included 0 and 1
+    # @return {int} the shortest path
+    def shortestPath2(self, grid):
+        if not grid or not grid[0]:
+            return -1
+        
+        n, m = len(grid), len(grid[0])
+        
+        # state: dp[i][j % 3] 代表从 0,0 跳到 i,j 的最少步数
+        dp = [[float('inf')] * 3 for _ in range(n)]
+
+        # initialize: 0,0 是起点
+        dp[0][0] = 0
+        
+        # function
+        for j in range(1, m):
+            for i in range(n):
+                dp[i][j % 3] = float('inf')
+                if grid[i][j]:
+                    continue
+                for delta_x, delta_y in DIRECTIONS:
+                    x, y = i + delta_x, j + delta_y
+                    if 0 <= x < n and 0 <= y < m:
+                        dp[i][j % 3] = min(dp[i][j % 3], dp[x][y % 3] + 1)
+
+        # answer
+        if dp[n - 1][(m - 1) % 3] == float('inf'):
+            return -1
+        return dp[n - 1][(m - 1) % 3]
+```
+
+## Non-official version
+循环数组的写法，用O(3n)的额外空间
+（1）列遍历j必须放在外循环（当然无论是否循环数组都得这样...）
+（2）为了使用循环数组，每一次更新时必须把当前step先初始化到maxsize，覆盖旧数值，避免错误
+（3）为了不覆盖掉原点，j必须从1开始（当然第一列除了原点也不可能走到）
+```python
+class Solution:    
+    def shortestPath2(self, grid):
+        if not grid or not grid[0]:
+            return -1
+        
+        n, m = len(grid), len(grid[0])
+        if n == 0 or m == 0:
+            return -1
+            
+        steps = [[sys.maxsize] * 3 for i in range(n)]
+        steps[0][0] = 0
+        
+        for j in range(1, m):  # horizontal axis
+            for i in range(n):  # vertical axis
+                steps[i][j % 3] = sys.maxsize
+                if grid[i][j] == 1:
+                    continue
+                
+                for delta_i, delta_j in [(1, 2), (-1, 2), (2, 1), (-2, 1)]:
+                    pre_i, pre_j = i - delta_i, j - delta_j
+                        
+                    if pre_i < 0 or pre_i >= n or pre_j < 0 or pre_j >= m or steps[pre_i][pre_j % 3] == sys.maxsize:
+                        continue
+                        
+                    steps[i][j % 3] = min(steps[i][j % 3], steps[pre_i][pre_j % 3] + 1)
+
+        if steps[n - 1][(m - 1) % 3] == sys.maxsize:
+            return -1
+            
+        return steps[n - 1][(m - 1) % 3]
+```
+
 # Two-way BFS
 sol: https://www.lintcode.com/problem/630/solution/19661
 ```python
@@ -69,131 +239,6 @@ class Solution:
         return True
 ```
 
-
-
-# Rolling Array
-## official version
-```python
-DIRECTIONS = [
-    (-1, -2),
-    (1, -2),
-    (-2, -1),
-    (2, -1),
-]
-
-
-class Solution:
-    # @param {boolean[][]} grid a chessboard included 0 and 1
-    # @return {int} the shortest path
-    def shortestPath2(self, grid):
-        if not grid or not grid[0]:
-            return -1
-        
-        n, m = len(grid), len(grid[0])
-        
-        # state: dp[i][j % 3] 代表从 0,0 跳到 i,j 的最少步数
-        dp = [[float('inf')] * 3 for _ in range(n)]
-
-        # initialize: 0,0 是起点
-        dp[0][0] = 0
-        
-        # function
-        for j in range(1, m):
-            for i in range(n):
-                dp[i][j % 3] = float('inf')
-                if grid[i][j]:
-                    continue
-                for delta_x, delta_y in DIRECTIONS:
-                    x, y = i + delta_x, j + delta_y
-                    if 0 <= x < n and 0 <= y < m:
-                        dp[i][j % 3] = min(dp[i][j % 3], dp[x][y % 3] + 1)
-
-        # answer
-        if dp[n - 1][(m - 1) % 3] == float('inf'):
-            return -1
-        return dp[n - 1][(m - 1) % 3]
-```
-
-
-## Non-official version
-循环数组的写法，用O(3n)的额外空间
-（1）列遍历j必须放在外循环（当然无论是否循环数组都得这样...）
-（2）为了使用循环数组，每一次更新时必须把当前step先初始化到maxsize，覆盖旧数值，避免错误
-（3）为了不覆盖掉原点，j必须从1开始（当然第一列除了原点也不可能走到）
-```python
-class Solution:    
-    def shortestPath2(self, grid):
-        if not grid or not grid[0]:
-            return -1
-        
-        n, m = len(grid), len(grid[0])
-        if n == 0 or m == 0:
-            return -1
-            
-        steps = [[sys.maxsize] * 3 for i in range(n)]
-        steps[0][0] = 0
-        
-        for j in range(1, m):
-            for i in range(n):
-                steps[i][j % 3] = sys.maxsize
-                if grid[i][j] == 1:
-                    continue
-                
-                for delta_i, delta_j in [(1, 2), (-1, 2), (2, 1), (-2, 1)]:
-                    pre_i, pre_j = i - delta_i, j - delta_j
-                        
-                    if pre_i < 0 or pre_i >= n or pre_j < 0 or pre_j >= m or steps[pre_i][pre_j % 3] == sys.maxsize:
-                        continue
-                        
-                    steps[i][j % 3] = min(steps[i][j % 3], steps[pre_i][pre_j % 3] + 1)
-
-        if steps[n - 1][(m - 1) % 3] == sys.maxsize:
-            return -1
-            
-        return steps[n - 1][(m - 1) % 3]
-```
-
-
-
-# Simple DP
-sol: https://www.lintcode.com/problem/630/solution/20146
-```python
-class Solution:
-    # @param {boolean[][]} grid a chessboard included 0 and 1
-    # @return {int} the shortest path
-    def shortestPath2(self, grid):
-        # Write your code here
-        n = len(grid)
-        if n == 0:
-            return -1
-
-        m = len(grid[0])
-        if m == 0:
-            return -1
-
-        f = [ [sys.maxsize for j in range(m)] for _ in range(n)]
-
-        f[0][0] = 0
-        for j in range(m):
-            for i in range(n):
-                if not grid[i][j]:
-                    if i >= 1 and j >= 2 and f[i - 1][j - 2] != sys.maxsize:
-                        f[i][j] = min(f[i][j], f[i - 1][j - 2] + 1)
-                    if i + 1 < n and j >= 2 and f[i + 1][j - 2] != sys.maxsize:
-                        f[i][j] = min(f[i][j], f[i + 1][j - 2] + 1)
-                    if i >= 2 and j >= 1 and f[i - 2][j - 1] != sys.maxsize:
-                        f[i][j] = min(f[i][j], f[i - 2][j - 1] + 1)
-                    if i + 2 < n and j >= 1 and f[i + 2][j - 1] != sys.maxsize:
-                        f[i][j] = min(f[i][j], f[i + 2][j - 1] + 1)
-
-        if f[n - 1][m - 1] == sys.maxsize:
-            return -1
-
-        return f[n - 1][m - 1]
-```
-
-
-
 # BFS
 sol: https://www.lintcode.com/problem/630/solution/17412
 
@@ -228,7 +273,7 @@ def shortestPath2(self, grid):
         return -1
 ```
 
-## version 2
+## version 2 similar to official BFS solution
 url: https://www.lintcode.com/problem/630/solution/19620
 一个BFS的基本解法，十分的传统了。时间复杂度：O（N）N是matrix里点的个数。空间复杂度：O（N）
 ```python
