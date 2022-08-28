@@ -99,7 +99,7 @@ class Solution:
                     res += 1
         return res
 ```
-
+# Comparison: DFS vs BFS
 ```python
 class Solution:
     def numIslands_DFS(self, grid: List[List[str]]) -> int:
@@ -119,33 +119,34 @@ class Solution:
 
         for i in range(m):
             for j in range(n):
-                if grid[i][j] == 1:
-                    dfs(i, j)
+                if grid[i][j] == '1':
+                    dfs(i, j)  # [4]
                     res += 1
         
         return res
 
-    def numIslands_DFS(self, grid: List[List[str]]) -> int:
+    def numIslands_BFS(self, grid: List[List[str]]) -> int:
         if not grid or len(grid) == 0 or len(grid[0]) == 0:
             return 0
         res = 0
         dirs = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # Python(i, j) up, down, left, right
         m, n = len(grid), len(grid[0])
-        que = []  # [4] BFS queue
+        que = []  # [5] BFS queue
+
         for i in range(m):
             for j in range(n):
-                if grid[i][j] == 1:
-                    grid[i][j] = 0
+                if grid[i][j] == '1':
+                    grid[i][j] = '0'  # [6]
                     res += 1
 
-                    que.append((i, j))  # [5] BFS add into queue
+                    que.append((i, j))  # [7] BFS add into queue
                     while que:
-                        i, j = que.pop()
+                        r, c = que.pop()  # [8] BFS be sure to make it different from (i, j)
                         for d in dirs:
-                            ni, nj = i + d[0], j + d[1]
-                            if 0 <= ni < m and 0 <= nj < n and grid[ni][nj] == '1':
-                                grid[ni][nj] = '0'
-                                que.append((ni, nj))
+                            nr, nc = r + d[0], c + d[1]
+                            if 0 <= nr < m and 0 <= nc < n and grid[nr][nc] == '1':
+                                grid[nr][nc] = '0'
+                                que.append((nr, nc))
         return res
 ```
 
@@ -155,32 +156,6 @@ class Solution:
 
 在写dfs的时候可以把代码包装成一个函数，需要注意的是，由于BFS会把周围的1全部改成0，所以在出队列 (queue) 的时候，做一个判断，如果当前围着孩子已经被改了，那么就不用下面的搜索了。
 
-```python
-class Solution:
-    def numIslands(self, grid: List[List[str]]) -> int:
-        if not grid or len(grid) == 0 or len(grid[0]) == 0: return 0
-        m, n = map(len, [grid, grid[0]])
-        res = 0
-        que = []
-        diList, djList = [-1, 0, 1, 0], [0, 1, 0, -1]
-        for i in range(m):
-            for j in range(n):
-                if grid[i][j] == '1':
-                    grid[i][j] = '0'
-                    res += 1
-# 1 THE START OF BFS                
-                    que.append((i, j))
-                    while que:
-                        x, y = que.pop()
-                        for dx, dy in zip(diList, djList):
-                            nx, ny = x + dx, y + dy
-                            if 0 <= nx < m and 0 <= ny < n and grid[nx][ny] == '1':
-                                grid[nx][ny] = '0'
-                                que.append((nx,ny))
-# 2 END OF THE PROGRAM
-        return res
-                            
-```
 
 # JZ 并查集 (to be continued)
 ```python
