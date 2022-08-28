@@ -59,7 +59,8 @@ class Solution:
                     self.dfs(grid, r, c) # <---DFS template
                     res += 1
         return res
-        
+
+    # Method A. grid is an augument of dfs()    
     def dfs(self, grid, i, j):
         dirs = [[-1, 0], [0, 1], [0, -1], [1, 0]]
         grid[i][j] = "0" 
@@ -78,9 +79,10 @@ class Solution:
     def numIslands(self, grid: List[List[str]]) -> int:
         if not grid: return 0
         res = 0
-        dirs = [(0, -1), (0, 1), (-1, 0), (1, 0)] # left, right, up, down
+        dirs = [(0, -1), (0, 1), (-1, 0), (1, 0)] # Python(i, j) left, right, up, down
         m, n = len(grid), len(grid[0])
         
+        # Method B. grid is NOT an augument of dfs()
         def dfs(i, j):
             if grid[i][j] == "0": return
             grid[i][j] = "0"
@@ -98,11 +100,60 @@ class Solution:
         return res
 ```
 
+```python
+class Solution:
+    def numIslands_DFS(self, grid: List[List[str]]) -> int:
+        if not grid or len(grid) == 0 or len(grid[0]) == 0:
+            return 0
+        res = 0
+        dirs = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # Python(i, j) up, down, left, right
+        m, n = len(grid), len(grid[0])
+
+        def dfs(i, j):
+            if grid[i][j] == '0': return
+            grid[i][j] = '0'  # [0] DFS 归零操作在此发生。Preorder traversal。
+            for d in dirs:
+                ni, nj = i + d[0], j + d[1]
+                if 0 <= ni < m and 0 <= nj < n:  # [2] DFS此处不判断等不等于一。下面也不做归零。
+                    dfs(ni, nj)  # [3] DFS move onto child node.
+
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j] == 1:
+                    dfs(i, j)
+                    res += 1
+        
+        return res
+
+    def numIslands_DFS(self, grid: List[List[str]]) -> int:
+        if not grid or len(grid) == 0 or len(grid[0]) == 0:
+            return 0
+        res = 0
+        dirs = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # Python(i, j) up, down, left, right
+        m, n = len(grid), len(grid[0])
+        que = []  # [4] BFS queue
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j] == 1:
+                    grid[i][j] = 0
+                    res += 1
+
+                    que.append((i, j))  # [5] BFS add into queue
+                    while que:
+                        i, j = que.pop()
+                        for d in dirs:
+                            ni, nj = i + d[0], j + d[1]
+                            if 0 <= ni < m and 0 <= nj < n and grid[ni][nj] == '1':
+                                grid[ni][nj] = '0'
+                                que.append((ni, nj))
+        return res
+```
+
 # VERSION 2. BFS
 
 这个题同样可以使用BFS解决。当遇到一个小岛的时候，做个BFS搜索，把它周围的小岛全部转成0即可。速度比DFS稍微慢了一点点。
 
-在写dfs的时候可以把代码包装成一个函数，需要注意的是，由于BFS会把周围的1全部改成0，所以在出队列的时候，做一个判断，如果当前围着孩子已经被改了，那么就不用下面的搜索了。
+在写dfs的时候可以把代码包装成一个函数，需要注意的是，由于BFS会把周围的1全部改成0，所以在出队列 (queue) 的时候，做一个判断，如果当前围着孩子已经被改了，那么就不用下面的搜索了。
 
 ```python
 class Solution:
@@ -131,7 +182,7 @@ class Solution:
                             
 ```
 
-# JZ 并查集
+# JZ 并查集 (to be continued)
 ```python
 from typing import (
     List,
