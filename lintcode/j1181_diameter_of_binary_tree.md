@@ -1,54 +1,66 @@
-from lintcode import (
-    TreeNode,
-)
-
-"""
+# DFS
+- WHY USES GLOBAL VARIABLES? The reason is that a nested function can access the variable without specifying it as one of the function's arguments. 
+```python
 Definition of TreeNode:
 class TreeNode:
     def __init__(self, val):
         self.val = val
         self.left, self.right = None, None
+```
 
-DSF: https://www.lintcode.com/problem/1181/solution/56987?fromId=164&_from=collection O(n) O(height)        
-"""
+DSF: https://www.lintcode.com/problem/1181/solution/56987?fromId=164&_from=collection 
 
+O(n) O(height)        
+
+```python
 class Solution:
-    def diameter_of_binary_tree(self, root: TreeNode) -> int:
-        self.ans = 1
-        def depth(node):
-            # 访问到空节点了，返回0
+    def diameter_of_binary_tree_1(self, root: TreeNode) -> int:
+        # Method 1. class attribute
+        self.ans = 0
+        def depth(node):  # the DFS helper function: the depth of node (the input).
             if not node:
                 return 0
-            # 左儿子为根的子树的深度
-            L = depth(node.left)
-            # 右儿子为根的子树的深度
-            R = depth(node.right)
-            # 计算d_node即L+R+1 并更新ans
-            self.ans = max(self.ans, L + R + 1)
-            # 返回该节点为根的子树的深度
-            return max(L, R) + 1
+            max_height_left = depth(node.left)
+            max_height_right = depth(node.right)
+            self.ans = max(self.ans, max_height_left + max_height_right)
+            return max(max_height_left, max_height_right) + 1
 
         depth(root)
-        return self.ans - 1
+        return self.ans
+
+    def diameter_of_binary_tree_2(self, root: TreeNode) -> int:
+        # Method 2. global variable
+        ans = [0]
+        def depth(node):  # the DFS helper function
+            if not node:
+                return 0
+            max_height_left = depth(node.left)
+            max_height_right = depth(node.right)
+            ans[0] = max(ans[0], max_height_left + max_height_right)
+            return max(max_height_left, max_height_right) + 1
+
+        depth(root)
+        return ans[0]       
+```
+
+Example: Use of global variables.
+```python
+class solution:
+    def foo(self, input: int):
+        global_variable = [0]
+        def boo(some_variable):  # we don't need to explicitly pass the global variable into the nested function.
+            return some_variable + global_variable[0]
+        return boo(input)
+```
 
 
-"""
-方法一 https://www.lintcode.com/problem/1181/solution/19616?fromId=164&_from=collection
-"""        
-"""
-Definition of TreeNode:
-class TreeNode:
-    def __init__(self, val):
-        self.val = val
-        self.left, self.right = None, None
-"""
-
+```python
 class Solution:
     """
     @param root: a root of binary tree
     @return: return a integer
     """
-    def diameterOfBinaryTree(self, root):
+    def diameter_of_binary_tree_3(self, root):
         _, diameter = self.helper(root)
         return diameter
     
@@ -66,18 +78,16 @@ class Solution:
                        left_longest + right_longest)
         
         return longest, diameter
+```
 
-
-"""
-方法二 https://www.lintcode.com/problem/1181/solution/19616?fromId=164&_from=collection
-"""        
-"""
+# BFS 
+Official clean version
+```
 Definition of TreeNode:
 class TreeNode:
     def __init__(self, val):
         self.val = val
         self.left, self.right = None, None
-"""
 
 class Solution:
     """
@@ -102,11 +112,11 @@ class Solution:
             queue.append(node.left)
             queue.append(node.right)
         
-        longest[None] = 0
-        diameter[None] = 0
+        longest[None] = 0   # [1] trick
+        diameter[None] = 0  # [1] trick
         
         # 逆序遍历BFS序，并更新节点最长链和直径
-        for i in range(len(bfs_order) - 1, -1, -1):
+        for i in range(len( ) - 1, -1, -1):
             node = bfs_order[i]
             
             left_longest, left_diameter = longest[node.left], diameter[node.left]
@@ -118,3 +128,4 @@ class Solution:
                                  left_longest + right_longest)
         
         return diameter[root]
+```
