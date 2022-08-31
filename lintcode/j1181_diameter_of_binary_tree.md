@@ -123,7 +123,7 @@ class Solution:
             right_longest, right_diameter = longest[node.right], diameter[node.right]
             
             longest[node] = max(left_longest, right_longest) + 1
-            diameter[node] = max(left_diameter,
+            diameter[node] = max(left_diameter,asr
                                  right_diameter,
                                  left_longest + right_longest)
         
