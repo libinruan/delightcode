@@ -51,5 +51,3 @@ while queue:
         distance[neighbor] = distance[node] + 1
         queue.append(neighbor)
 ```
-
-[](

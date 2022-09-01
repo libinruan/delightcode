@@ -21,3 +21,7 @@ August 28, 2022 /leetcode/jz-sprint/DFS-preliminary.md
 
 - [JZ 1181. diameter of binary tree](https://github.com/libinruan/delightcode/blob/main/lintcode/j1181_diameter_of_binary_tree.md)
 - [JZ 1469. longest path on the tree](https://github.com/libinruan/delightcode/blob/main/lintcode/j1469_longest_path_on_the_tree.md)
+
+August 30, 2022
+
+- [JZ 1565 modern ludo i]()
