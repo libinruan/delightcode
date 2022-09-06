@@ -24,4 +24,8 @@ August 28, 2022 /leetcode/jz-sprint/DFS-preliminary.md
 
 August 30, 2022
 
-- [JZ 1565 modern ludo i]()
+- [JZ 1565. modern ludo i]()
+
+August 31, 2022
+
+- [JZ 573. build post office]()
