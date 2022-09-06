@@ -73,8 +73,8 @@ class Solution:
 
 # Follow up question: what if the number of space is much larger than the number of houses?
 How should we optimize with this information?
-![9-5-at-21-14]()
-![at-21-17 ]()
+![9-5-at-21-14](https://i.postimg.cc/CKNjHjZ5/2022-09-05-at-21-14-06.png)
+![at-21-17 ](https://i.postimg.cc/Hxbj9mv2/2022-09-05-at-21-17-53.png)
 ```python
 def shortestDistance(self, grid):
     if not grid:
