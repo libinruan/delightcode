@@ -131,5 +131,3 @@ def is_valid(self, x, y, grid):
         return False
     return grid[x][y] == GridType.EMPTY
 ```
-
-```
